@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Registrati - Series Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="navbar" class="navbar"></header>
+
+  <main class="container">
+    <form class="form" id="register-form">
+      <h1>Crea il tuo account</h1>
+      <p class="muted">Inizia a condividere le tue recensioni con la community.</p>
+
+      <div class="form-row">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required minlength="3" maxlength="20" pattern="[a-zA-Z0-9_]+" />
+      </div>
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autocomplete="email" />
+      </div>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required minlength="6" autocomplete="new-password" />
+      </div>
+      <div class="form-row">
+        <button type="submit" class="btn btn-primary" style="width:100%;">Registrati</button>
+      </div>
+      <p class="helper">Hai gia un account? <a href="login.html">Accedi</a></p>
+      <p class="helper" id="error-msg" style="color: var(--accent); display:none;"></p>
+    </form>
+  </main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.getElementById("register-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const err = document.getElementById("error-msg");
+
+      const users = Storage_.getUsers();
+      if (users.find(u => u.email === email)) {
+        err.style.display = "block";
+        err.textContent = "Email gia registrata.";
+        return;
+      }
+      if (users.find(u => u.username.toLowerCase() === username.toLowerCase())) {
+        err.style.display = "block";
+        err.textContent = "Username gia in uso.";
+        return;
+      }
+
+      users.push({ username, email, password, createdAt: new Date().toISOString() });
+      Storage_.saveUsers(users);
+      Storage_.setUser({ username, email });
+      SH.toast("Benvenuto su Series Hub!");
+      setTimeout(() => location.href = "index.html", 500);
+    });
+  </script>
+</body>
+</html>

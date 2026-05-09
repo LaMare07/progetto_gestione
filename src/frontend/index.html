@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Series Hub - Vota, recensisci, discuti le serie tv</title>
+  <meta name="description" content="Series Hub: la community italiana per votare e recensire le tue serie tv preferite." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-route="index">
+  <header id="navbar" class="navbar"></header>
+
+  <main class="container">
+    <section class="hero" id="hero"></section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Top 10 questa settimana</h2>
+        <a href="top.html">Vedi tutte ></a>
+      </div>
+      <div class="grid" id="top10-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>In tendenza nella community</h2>
+        <a href="series.html">Vedi tutte ></a>
+      </div>
+      <div class="grid" id="trending-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Recensioni recenti</h2>
+      </div>
+      <div id="recent-reviews"></div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const featured = SERIES.find(s => s.id === "stranger-things");
+      const heroEl = document.getElementById("hero");
+      heroEl.style.background =
+        `linear-gradient(135deg, ${featured.color1}, ${featured.color2})`;
+      heroEl.innerHTML = `
+        <img src="${SH.backdropUrl(featured)}" alt="" class="hero-bg-img" onerror="this.remove()" />
+        <div class="hero-content">
+          <div class="hero-meta">
+            <span class="tag">In evidenza</span>
+            <span class="muted">${featured.year} - ${featured.seasons} stagioni</span>
+          </div>
+          <h1>${SH.escapeHtml(featured.title)}</h1>
+          <p>${SH.escapeHtml(featured.synopsis)}</p>
+          <div class="row">
+            <a class="btn btn-primary" href="series-detail.html?id=${featured.id}">Scopri di piu</a>
+            <span class="muted">* ${featured.avgRating.toFixed(1)} - ${featured.reviewsCount.toLocaleString("it-IT")} voti</span>
+          </div>
+        </div>`;
+
+      const top = SERIES.filter(s => s.netflixTop10)
+        .sort((a, b) => (a.top10Rank || 99) - (b.top10Rank || 99));
+      document.getElementById("top10-grid").innerHTML =
+        top.map(s => SH.seriesCard(s, { showRank: true })).join("");
+
+      const trending = [...SERIES]
+        .sort((a, b) => b.reviewsCount - a.reviewsCount)
+        .slice(0, 5);
+      document.getElementById("trending-grid").innerHTML =
+        trending.map(s => SH.seriesCard(s)).join("");
+
+      const recent = (window.SEED_REVIEWS || []).slice(0, 4);
+      document.getElementById("recent-reviews").innerHTML = recent.map(r => {
+        const s = SH.findSeries(r.seriesId);
+        if (!s) return "";
+        return `
+          <div class="review">
+            <div class="review-head">
+              <div class="avatar">${r.user.charAt(0).toUpperCase()}</div>
+              <div>
+                <div class="review-user">@${SH.escapeHtml(r.user)}</div>
+                <div class="muted" style="font-size:.85rem;">
+                  ha votato <a href="series-detail.html?id=${s.id}">${SH.escapeHtml(s.title)}</a>
+                </div>
+              </div>
+              <div class="review-rating">${r.rating}/10</div>
+              <div class="review-date">${r.date}</div>
+            </div>
+            <div class="review-body">${SH.escapeHtml(r.body)}</div>
+          </div>`;
+      }).join("");
+    });
+  </script>
+</body>
+</html>

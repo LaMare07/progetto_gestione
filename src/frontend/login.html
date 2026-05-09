@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Accedi - Series Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header id="navbar" class="navbar"></header>
+
+  <main class="container">
+    <form class="form" id="login-form">
+      <h1>Accedi</h1>
+      <p class="muted">Bentornato! Accedi per votare e recensire le tue serie.</p>
+
+      <div class="form-row">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required autocomplete="email" />
+      </div>
+      <div class="form-row">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required autocomplete="current-password" />
+      </div>
+      <div class="form-row">
+        <button type="submit" class="btn btn-primary" style="width:100%;">Accedi</button>
+      </div>
+      <p class="helper">Non hai un account? <a href="register.html">Registrati</a></p>
+      <p class="helper" id="error-msg" style="color: var(--accent); display:none;"></p>
+    </form>
+  </main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.getElementById("login-form").addEventListener("submit", e => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const users = Storage_.getUsers();
+      const user = users.find(u => u.email === email && u.password === password);
+      const err = document.getElementById("error-msg");
+      if (!user) {
+        err.style.display = "block";
+        err.textContent = "Credenziali non valide.";
+        return;
+      }
+      Storage_.setUser({ username: user.username, email: user.email });
+      SH.toast("Accesso effettuato");
+      setTimeout(() => location.href = "index.html", 400);
+    });
+  </script>
+</body>
+</html>

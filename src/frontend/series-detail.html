@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dettaglio serie - Series Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-route="series">
+  <header id="navbar" class="navbar"></header>
+
+  <main class="container" id="content">
+    <div class="empty">Caricamento...</div>
+  </main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const id = SH.getQuery("id");
+      const s = SH.findSeries(id);
+      const root = document.getElementById("content");
+
+      if (!s) {
+        root.innerHTML = `<div class="empty">Serie non trovata. <a href="series.html">Torna al catalogo</a></div>`;
+        return;
+      }
+
+      document.title = `${s.title} - Series Hub`;
+
+      const user = Storage_.getUser();
+      const wl = Storage_.getWatchlist()[s.id];
+      const myReview = Storage_.getUserReviews().find(r => r.seriesId === s.id && r.user === user?.username);
+
+      root.innerHTML = `
+        <article class="series-hero">
+          <div class="series-hero-backdrop" style="background: linear-gradient(120deg, ${s.color1}, ${s.color2});">
+            <img src="${SH.backdropUrl(s)}" alt="" onerror="this.remove()" class="series-hero-img" />
+          </div>
+          <div class="series-hero-body">
+            <div class="series-poster" style="${SH.posterStyle(s)}">
+              ${SH.posterImg(s)}
+              <span class="poster-fallback">${s.title.charAt(0)}</span>
+            </div>
+            <div class="series-info">
+              <h1>${SH.escapeHtml(s.title)}</h1>
+              <div class="muted">${s.year} - ${s.seasons} stagioni - ${s.status}</div>
+              <div class="series-rating-big">* ${s.avgRating.toFixed(1)} <small>(${s.reviewsCount.toLocaleString("it-IT")} voti)</small></div>
+              <div class="series-tags">
+                ${s.genres.map(g => `<span class="tag">${g}</span>`).join("")}
+              </div>
+              <p>${SH.escapeHtml(s.synopsis)}</p>
+              <div class="row">
+                <select id="watchlist-select" style="max-width:220px;">
+                  <option value="">+ Aggiungi a watchlist</option>
+                  <option value="planned">Da vedere</option>
+                  <option value="watching">In corso</option>
+                  <option value="completed">Completata</option>
+                  <option value="dropped">Abbandonata</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <nav class="tabs" role="tablist">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="reviews">Recensioni</button>
+          <button class="tab" data-tab="threads">Discussioni</button>
+          <button class="tab" data-tab="cast">Cast</button>
+        </nav>
+
+        <section class="tab-panel active" data-panel="overview">
+          <p class="muted">Sinossi</p>
+          <p>${SH.escapeHtml(s.synopsis)}</p>
+          <p class="muted">Dettagli</p>
+          <ul>
+            <li>Anno di uscita: ${s.year}</li>
+            <li>Stagioni: ${s.seasons}</li>
+            <li>Stato: ${s.status}</li>
+            <li>Generi: ${s.genres.join(", ")}</li>
+          </ul>
+        </section>
+
+        <section class="tab-panel" data-panel="reviews">
+          <div id="review-form-wrap"></div>
+          <h3 style="margin-top:1.5rem;">Recensioni della community</h3>
+          <div id="reviews-list"></div>
+        </section>
+
+        <section class="tab-panel" data-panel="threads">
+          <div class="empty">Le discussioni saranno disponibili presto. Sarai il primo a poter aprire un thread!</div>
+        </section>
+
+        <section class="tab-panel" data-panel="cast">
+          <ul>${s.cast.map(c => `<li>${SH.escapeHtml(c)}</li>`).join("")}</ul>
+        </section>
+      `;
+
+      const wlSelect = document.getElementById("watchlist-select");
+      if (wl) wlSelect.value = wl.status;
+      wlSelect.addEventListener("change", e => {
+        if (!Storage_.getUser()) {
+          SH.toast("Accedi per gestire la watchlist");
+          location.href = "login.html";
+          return;
+        }
+        const v = e.target.value || null;
+        Storage_.setWatchStatus(s.id, v);
+        SH.toast(v ? "Aggiunta alla watchlist" : "Rimossa dalla watchlist");
+      });
+
+      // Tabs
+      document.querySelectorAll(".tab").forEach(tab => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+          document.querySelectorAll(".tab-panel").forEach(p => p.classList.remove("active"));
+          tab.classList.add("active");
+          document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add("active");
+        });
+      });
+
+      // Form recensione
+      const formWrap = document.getElementById("review-form-wrap");
+      if (!user) {
+        formWrap.innerHTML = `<div class="empty"><a href="login.html">Accedi</a> per scrivere la tua recensione.</div>`;
+      } else {
+        let currentRating = myReview?.rating || 0;
+        formWrap.innerHTML = `
+          <form id="review-form" class="review">
+            <div class="review-head">
+              <strong>${myReview ? "Modifica la tua recensione" : "Scrivi la tua recensione"}</strong>
+            </div>
+            <div class="form-row">
+              <label>Voto: <span id="rating-display">${currentRating || "-"}/10</span></label>
+              <div class="rating-input" id="rating-input">
+                ${Array.from({ length: 10 }, (_, i) =>
+                  `<button type="button" data-v="${i+1}" class="${i+1 <= currentRating ? "active" : ""}">*</button>`
+                ).join("")}
+              </div>
+            </div>
+            <div class="form-row">
+              <textarea id="review-body" rows="3" placeholder="Cosa ne pensi?">${SH.escapeHtml(myReview?.body || "")}</textarea>
+            </div>
+            <div class="form-row row">
+              <label><input type="checkbox" id="review-spoiler" ${myReview?.spoiler ? "checked" : ""} style="width:auto;"> Contiene spoiler</label>
+              <span class="spacer"></span>
+              <button type="submit" class="btn btn-primary">Pubblica</button>
+            </div>
+          </form>
+        `;
+
+        const ratingInput = document.getElementById("rating-input");
+        ratingInput.addEventListener("click", e => {
+          const btn = e.target.closest("button[data-v]");
+          if (!btn) return;
+          currentRating = parseInt(btn.dataset.v, 10);
+          ratingInput.querySelectorAll("button").forEach(b => {
+            b.classList.toggle("active", parseInt(b.dataset.v, 10) <= currentRating);
+          });
+          document.getElementById("rating-display").textContent = currentRating + "/10";
+        });
+
+        document.getElementById("review-form").addEventListener("submit", e => {
+          e.preventDefault();
+          if (!currentRating) { SH.toast("Scegli un voto"); return; }
+          const body = document.getElementById("review-body").value.trim();
+          Storage_.saveUserReview({
+            seriesId: s.id,
+            user: user.username,
+            rating: currentRating,
+            body,
+            spoiler: document.getElementById("review-spoiler").checked,
+            date: new Date().toISOString().slice(0, 10),
+            votes: 0
+          });
+          SH.toast("Recensione salvata");
+          renderReviews();
+        });
+      }
+
+      function renderReviews() {
+        const list = Storage_.getReviewsForSeries(s.id);
+        const el = document.getElementById("reviews-list");
+        if (!list.length) {
+          el.innerHTML = `<div class="empty">Nessuna recensione. Sii il primo a scriverne una!</div>`;
+          return;
+        }
+        el.innerHTML = list.map(r => `
+          <div class="review">
+            <div class="review-head">
+              <div class="avatar">${r.user.charAt(0).toUpperCase()}</div>
+              <div class="review-user">@${SH.escapeHtml(r.user)}</div>
+              <div class="review-rating">${r.rating}/10</div>
+              <div class="review-date">${r.date || ""}</div>
+            </div>
+            ${r.spoiler
+              ? `<div class="review-body spoiler" onclick="this.classList.add('revealed')" title="Click per mostrare lo spoiler">${SH.escapeHtml(r.body)}</div>`
+              : `<div class="review-body">${SH.escapeHtml(r.body)}</div>`}
+            <div class="review-actions">
+              <button>^ ${r.votes ?? 0}</button>
+              <button>v</button>
+              <button>Rispondi</button>
+            </div>
+          </div>
+        `).join("");
+      }
+      renderReviews();
+    });
+  </script>
+</body>
+</html>

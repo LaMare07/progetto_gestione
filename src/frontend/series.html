@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Catalogo serie - Series Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-route="series">
+  <header id="navbar" class="navbar"></header>
+
+  <main class="container">
+    <section class="section">
+      <div class="section-head">
+        <h2>Catalogo</h2>
+        <span class="muted" id="result-count"></span>
+      </div>
+
+      <div class="row" style="margin-bottom:1rem;">
+        <input type="search" id="filter-q" placeholder="Cerca per titolo..." style="max-width:280px;" />
+        <select id="filter-genre" style="max-width:200px;">
+          <option value="">Tutti i generi</option>
+        </select>
+        <select id="filter-sort" style="max-width:200px;">
+          <option value="rating">Voto piu alto</option>
+          <option value="reviews">Piu recensiti</option>
+          <option value="year-desc">Piu recenti</option>
+          <option value="year-asc">Meno recenti</option>
+          <option value="title">A-Z</option>
+        </select>
+      </div>
+
+      <div class="grid" id="catalog-grid"></div>
+      <div class="empty hidden" id="empty-state">Nessuna serie trovata.</div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const allGenres = [...new Set(SERIES.flatMap(s => s.genres))].sort();
+      const genreSel = document.getElementById("filter-genre");
+      allGenres.forEach(g => {
+        const opt = document.createElement("option");
+        opt.value = g; opt.textContent = g;
+        genreSel.appendChild(opt);
+      });
+
+      const qFromUrl = SH.getQuery("q");
+      if (qFromUrl) document.getElementById("filter-q").value = qFromUrl;
+
+      function render() {
+        const q = document.getElementById("filter-q").value.toLowerCase().trim();
+        const genre = document.getElementById("filter-genre").value;
+        const sort = document.getElementById("filter-sort").value;
+
+        let list = SERIES.filter(s => {
+          if (q && !s.title.toLowerCase().includes(q)) return false;
+          if (genre && !s.genres.includes(genre)) return false;
+          return true;
+        });
+
+        const cmp = {
+          "rating": (a, b) => b.avgRating - a.avgRating,
+          "reviews": (a, b) => b.reviewsCount - a.reviewsCount,
+          "year-desc": (a, b) => b.year - a.year,
+          "year-asc": (a, b) => a.year - b.year,
+          "title": (a, b) => a.title.localeCompare(b.title)
+        };
+        list.sort(cmp[sort]);
+
+        const grid = document.getElementById("catalog-grid");
+        const empty = document.getElementById("empty-state");
+        grid.innerHTML = list.map(s => SH.seriesCard(s)).join("");
+        empty.classList.toggle("hidden", list.length > 0);
+        document.getElementById("result-count").textContent =
+          list.length + " serie";
+      }
+
+      ["filter-q", "filter-genre", "filter-sort"].forEach(id => {
+        document.getElementById(id).addEventListener("input", render);
+      });
+      render();
+    });
+  </script>
+</body>
+</html>

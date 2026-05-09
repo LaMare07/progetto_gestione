@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Top 10 - Series Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-route="top">
+  <header id="navbar" class="navbar"></header>
+
+  <main class="container">
+    <section class="section">
+      <div class="section-head">
+        <h2>Classifiche</h2>
+        <select id="scope-select" style="max-width:240px;">
+          <option value="netflix">Top 10 Netflix (Italia)</option>
+          <option value="rating">Top per voto community</option>
+          <option value="reviews">Piu recensite</option>
+        </select>
+      </div>
+      <div class="grid" id="top-grid"></div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      function render() {
+        const scope = document.getElementById("scope-select").value;
+        let list;
+        if (scope === "netflix") {
+          list = SERIES.filter(s => s.netflixTop10).sort((a, b) => (a.top10Rank || 99) - (b.top10Rank || 99));
+        } else if (scope === "rating") {
+          list = [...SERIES].sort((a, b) => b.avgRating - a.avgRating).slice(0, 10);
+        } else {
+          list = [...SERIES].sort((a, b) => b.reviewsCount - a.reviewsCount).slice(0, 10);
+        }
+        document.getElementById("top-grid").innerHTML =
+          list.map((s, i) => SH.seriesCard({ ...s, top10Rank: s.top10Rank || (i + 1) }, { showRank: true })).join("");
+      }
+      document.getElementById("scope-select").addEventListener("change", render);
+      render();
+    });
+  </script>
+</body>
+</html>

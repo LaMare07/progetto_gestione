@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>La mia watchlist - Series Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body data-route="watchlist">
+  <header id="navbar" class="navbar"></header>
+
+  <main class="container">
+    <section class="section">
+      <div class="section-head">
+        <h2>La mia watchlist</h2>
+        <select id="status-filter" style="max-width:200px;">
+          <option value="">Tutti gli stati</option>
+          <option value="planned">Da vedere</option>
+          <option value="watching">In corso</option>
+          <option value="completed">Completate</option>
+          <option value="dropped">Abbandonate</option>
+        </select>
+      </div>
+      <div id="wl-content"></div>
+    </section>
+  </main>
+
+  <footer id="footer" class="footer"></footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const statusLabels = {
+        planned: "Da vedere",
+        watching: "In corso",
+        completed: "Completata",
+        dropped: "Abbandonata"
+      };
+
+      function render() {
+        const wl = Storage_.getWatchlist();
+        const filter = document.getElementById("status-filter").value;
+        const ids = Object.keys(wl).filter(id => !filter || wl[id].status === filter);
+        const root = document.getElementById("wl-content");
+
+        if (!ids.length) {
+          root.innerHTML = `
+            <div class="empty">
+              La tua watchlist e vuota.<br>
+              <a class="btn btn-primary" style="margin-top:1rem;" href="series.html">Esplora il catalogo</a>
+            </div>`;
+          return;
+        }
+
+        const cards = ids.map(id => {
+          const s = SH.findSeries(id);
+          if (!s) return "";
+          const status = wl[id].status;
+          return `
+            <div class="card" style="position:relative;">
+              <a href="series-detail.html?id=${id}">
+                <div class="card-poster" style="${SH.posterStyle(s)}">
+                  <span class="badge" style="background: var(--bg-elev-2); color: var(--text);">${statusLabels[status]}</span>
+                  <span aria-hidden="true">[${s.title.charAt(0)}]</span>
+                </div>
+              </a>
+              <div class="card-body">
+                <h3 class="card-title">${SH.escapeHtml(s.title)}</h3>
+                <div class="card-meta">
+                  <span>${s.year}</span>
+                  <span>-</span>
+                  <span>${s.seasons} stag.</span>
+                </div>
+                <button class="btn btn-sm btn-ghost" style="margin-top:.5rem;" data-remove="${id}">Rimuovi</button>
+              </div>
+            </div>`;
+        }).join("");
+
+        root.innerHTML = `<div class="grid">${cards}</div>`;
+        root.querySelectorAll("[data-remove]").forEach(btn => {
+          btn.addEventListener("click", () => {
+            Storage_.setWatchStatus(btn.dataset.remove, null);
+            SH.toast("Rimossa dalla watchlist");
+            render();
+          });
+        });
+      }
+
+      document.getElementById("status-filter").addEventListener("change", render);
+      render();
+    });
+  </script>
+</body>
+</html>
