@@ -2,17 +2,17 @@ Studio di Fattibilità - [SeriesHub]
 =======================================
 [TOC]
 
-v1.0.0 - 10/11/25 - [Marema Kebe/marema kebe]
+v1.0.0 - 13/05/26 - Marema Kebe
 
 <br>
 
 # Sommario Esecutivo
 
 ### Descrizione sintetica del progetto
-[2-3 righe di sintesi]
+Piattaforma digitale per gli appassionati di serie TV, dove si tiene traccia delle serie viste, si ricevono raccomandazioni personalizzate e si interagisce con una community di fan.
 
 ### Scopo principale dello studio
-[Motivazione dell'analisi]
+Valutare la fattibilità del progett, considerando aspetti tecnici, economici. Capire come organizzare il lavoro per realizzare il progetto, identificare i rischi e le opportunità del mercato. 
 
 ### Raccomandazione finale
 [Fattibile/NON Fattibile - con motivazione sintetica]
@@ -21,10 +21,10 @@ v1.0.0 - 10/11/25 - [Marema Kebe/marema kebe]
 [Intervallo di costo]
 
 ### ROI atteso
-[Valore percentuale e temporale]
+L'accesso alla piattaforma sarà gratuito per un priodo di prova, mentre finito il periodo di prova sarà un abbonamento di 5€ al mese. [TODO] Il ROI atteso è del 150% entro i primi 2 anni, con un punto di pareggio previsto entro 18 mesi.
 
 ### Rischi principali
-[Elenco puntato dei 3-5 rischi critici]
+
 
 <br>
 
