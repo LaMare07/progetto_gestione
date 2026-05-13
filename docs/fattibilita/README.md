@@ -1,8 +1,8 @@
-Studio di Fattibilità - [Nome Progetto]
+Studio di Fattibilità - [SeriesHub]
 =======================================
 [TOC]
 
-v1.0.0 - 10/11/25 - [Nome e cognome/responsabile]
+v1.0.0 - 10/11/25 - [Marema Kebe/marema kebe]
 
 <br>
 
