@@ -31,10 +31,10 @@ L'accesso alla piattaforma sarà gratuito per un priodo di prova, mentre finito 
 # 1. Introduzione
 
 ### Scopo del documento
-[Descrizione degli obiettivi dello studio di fattibilità]
+Questo documento ha lo scopo di analizzare la fattibilità del progetto SeriesHub dal punto di vista tecnico, economico e organizzativo.
 
 ### Contesto del progetto
-[Descrizione del contesto]
+SeriesHub appartiene al settore dei servizi digitali e delle piattaforme online basate su abbonamento.
 
 ### Stakeholder coinvolti
 [Elenco puntato degli stakeholder principali]
@@ -49,7 +49,10 @@ L'accesso alla piattaforma sarà gratuito per un priodo di prova, mentre finito 
 ## 2.1 Obiettivi del Progetto
 
 ### Obiettivi del progetto
-[Elenco puntato degli obiettivi principali]
+Creare una piattaforma moderna e intuitiva
+Permettere il tracciamento delle serie viste
+Offrire raccomandazioni personalizzate
+Creare una community attiva
 
 ### Obiettivi secondari
 [Elenco puntato degli obiettivi secondari]
