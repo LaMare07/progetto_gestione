@@ -45,14 +45,15 @@ SeriesHub appartiene al settore dei servizi digitali e delle piattaforme online 
 <br>
 
 # 2. Descrizione del Progetto
+A modern web platform where TV series fans can track what they’ve watched, rate their favorite shows, and discuss opinions with other users in real time.
 
 ## 2.1 Obiettivi del Progetto
 
 ### Obiettivi del progetto
-Creare una piattaforma moderna e intuitiva
-Permettere il tracciamento delle serie viste
-Offrire raccomandazioni personalizzate
-Creare una community attiva
+-Creare una piattaforma moderna e intuitiva
+-Permettere il tracciamento delle serie viste
+-Offrire raccomandazioni personalizzate
+-Creare una community attiva
 
 ### Obiettivi secondari
 [Elenco puntato degli obiettivi secondari]
@@ -64,21 +65,32 @@ Creare una community attiva
 
 ## 2.2 Caratteristiche Principali
 ### Funzionalità chiave
-[Elenco puntato delle funzionalità principali]
-
+-Registrazione e login
+-Profilo personale
+-Lista serie viste/preferite
+-Sistema di recensioni
+-Raccomandazioni tramite algoritmo
+-Chat/community tra utenti
+-Ricerca avanzata delle serie
 <br>
 
 ## 2.3 Requisiti Fondamentali
 
 ### Tecnici
-[Infrastrutture, software, hardware, specifiche tecniche]
+-Database cloud
+-Server web
+-API per dati delle serie TV
+-Applicazione responsive
 
 ### Operativi
-[Processi coinvolti, risorse necessarie]
+-Team di sviluppo
+-Assistenza clienti
+-Aggiornamenti continui
 
 ### Normativi
-[Conformità richieste, regolamenti]
-
+-Rispetto GDPR
+-Protezione dati utenti
+-Gestione sicura delle password
 <br>
 
 # 3. Analisi di Mercato
@@ -89,7 +101,7 @@ Creare una community attiva
 [Descrizione del target di mercato]
 
 ### Dimensione del mercato
-[Dati quantitativi e qualitativi]
+Il mercato streaming è in continua crescita grazie alla diffusione di piattaforme come Netflix e Disney+.
 
 ### Tendenze di mercato
 [Evoluzione del mercato, opportunità emergenti]
